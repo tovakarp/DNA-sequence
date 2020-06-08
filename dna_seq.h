@@ -1,7 +1,6 @@
 #ifndef __DNA_SEQ_H__
 #define __DNA_SEQ_H__
 
-
 #include <iostream>
 #include <map>
 #include <vector>
@@ -181,6 +180,11 @@ inline bool operator==(const dnaSequence &dna1, const dnaSequence &dna2){
     return true;
 }
 
+inline bool operator==(const dnaSequence &dna1, std::string s){
+    dnaSequence d(s);
+    return (d == dna1);
+}
+
 inline bool operator!=(const dnaSequence &dna1, const dnaSequence &dna2){
     return !(dna1 == dna2);
 }
@@ -273,14 +277,26 @@ inline size_t dnaSequence::count(const dnaSequence &subseq) const{
 
 inline std::vector<dnaSequence> dnaSequence::findConsensus() const{
     std::vector<dnaSequence> consensus;
-//    dnaSequence start("ATG");
-//    std::vector<size_t> s_index = findAll(start);
-//    size_t i = 0, index = 0;
-//
-//    for(i = 0; i < count(start); ++i){
-//    }
+    dnaSequence start("ATG"), end1("TAG"), end2("TAA"), end3("TGA"), codon("");;
+    std::vector<size_t> s_index = findAll(start);
+    size_t i = 0, index = 0;
+
+    for(i = 0; i < count(start); ++i){
+        index = s_index[i] + 3;
+
+        while(index + 2 < m_len){
+            codon = slice(index, index + 2);
+
+            if(codon == end1 or codon == end2 or codon == end3){
+
+                consensus.push_back(slice(s_index[i], index + 2));
+            }
+
+            index += 3;
+        }
+    }
     return consensus;
 }
 
 
-#endif
+#endif /* __DNA_SEQ__ */
