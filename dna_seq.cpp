@@ -1,4 +1,3 @@
-//#include <map>
 #include "dna_seq.h"
 
 void dnaSequence :: initSeq(const char *seq){

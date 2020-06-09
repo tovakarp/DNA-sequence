@@ -4,19 +4,21 @@
 #include <iostream>
 #include <map>
 #include <vector>
+#include <fstream>
 #include "cstring"
 #include "string"
 
 class dnaSequence{
 private:
-    class Nucleotide
-    {
+    class Nucleotide{
     public:
         Nucleotide(){};
 
         Nucleotide(char type);
 
         char getType() const;
+
+        char getPair() const;
 
         dnaSequence :: Nucleotide& operator=(char nucleotide);
 
@@ -43,6 +45,10 @@ public:
     Nucleotide& operator[](size_t index);
 //
     const size_t length() const;
+
+    void readDNAFromFile(const char *file_path);
+
+    void writeDNAToFile(const char *file_path);
 
     dnaSequence slice(size_t start, size_t end) const;
 
@@ -75,6 +81,17 @@ inline dnaSequence::Nucleotide::Nucleotide(char type) : m_nucleotide(type){
 
 inline char dnaSequence::Nucleotide::getType() const {
     return m_nucleotide;
+}
+
+inline char dnaSequence::Nucleotide::getPair() const {
+    std::map <char, char> pairs;
+    pairs['A'] = 'T';
+    pairs['T'] = 'A';
+    pairs['C'] = 'G';
+    pairs['G'] = 'C';
+
+    return pairs[m_nucleotide];
+
 }
 
 inline dnaSequence::Nucleotide& dnaSequence::Nucleotide::operator=(char nucleotide){
@@ -221,16 +238,10 @@ inline dnaSequence dnaSequence::slice(size_t start, size_t end) const{
 }
 
 inline dnaSequence dnaSequence::pairing() const{
-    std::map <char, char> pairs;
-    pairs['A'] = 'T';
-    pairs['T'] = 'A';
-    pairs['C'] = 'G';
-    pairs['G'] = 'C';
-
     std::string s;
 
     for(size_t i = 0; i < m_len; i++) {
-        s += pairs[m_seq[m_len - i - 1]];
+        s += m_seq[m_len - i - 1].getPair();
     }
 
     dnaSequence d(s);
@@ -296,6 +307,28 @@ inline std::vector<dnaSequence> dnaSequence::findConsensus() const{
         }
     }
     return consensus;
+}
+
+inline void dnaSequence::readDNAFromFile(const char *file_path){
+    std::ifstream filePtr;
+    filePtr.open(file_path);
+
+    std::string dnaSequence;
+    std::string line;
+
+    while (filePtr) {
+        getline(filePtr, line);
+        dnaSequence.append(line);
+    }
+
+    *this = dnaSequence;
+}
+
+inline void dnaSequence::writeDNAToFile(const char *file_path){
+    std::ofstream filePtr;
+    filePtr.open(file_path);
+    filePtr << *this << std::endl;
+    filePtr.close();
 }
 
 

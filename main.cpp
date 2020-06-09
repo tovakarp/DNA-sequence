@@ -11,7 +11,7 @@ int main(int argc, char* argv[])
 
 TEST(DnaBasicTests, InvalidType)
 {
-    ASSERT_ANY_THROW(dnaSequence a("ATF"));
+    ASSERT_THROW(dnaSequence a("ATF"), std::out_of_range);
     dnaSequence a("ATG");
     ASSERT_EQ(a, "ATG");
 }
@@ -98,4 +98,27 @@ TEST(DnaAdvancedTests, FindConsensus)
 
     ASSERT_EQ(dna1.findConsensus().size() ,3);
     ASSERT_EQ(dna2.findConsensus().size(), 0);
+}
+
+TEST(DnaAdvancedTests, WriteToFile){
+    dnaSequence d("ATG");
+    d.writeDNAToFile("dna.txt");
+
+    std::ifstream filePtr;
+    filePtr.open("dna.txt");
+
+    std::string dnaSequence;
+    std::string line;
+
+    getline(filePtr, line);
+
+    ASSERT_EQ(d, line);
+}
+
+
+TEST(DnaAdvancedTests, ReadFromFile){
+    dnaSequence d("");
+    d.readDNAFromFile("dna.txt");
+
+    ASSERT_EQ(d, "ATG");
 }
